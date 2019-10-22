@@ -1,0 +1,26 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="com.example.flutter_xiaomi_ssp">
+  <uses-permission android:name="android.permission.INTERNET"/>
+  <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
+  <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+  <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+  <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+  <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
+  <uses-permission android:name="android.permission.DOWNLOAD_WITHOUT_NOTIFICATION" />
+  <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
+
+  <application>
+    <activity
+      android:name="com.miui.zeus.mimo.sdk.activityProxy.ProxyActivity"
+      android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
+      android:exported="false"
+      android:hardwareAccelerated="true"
+      android:theme="@android:style/Theme.Holo.NoActionBar.Fullscreen" /> <!--可以根据App设置不同的activity theme-->
+  <activity
+      android:name="com.miui.zeus.mimo.sdk.activityProxy.FullScreenProxyActivity"
+      android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
+      android:exported="false"
+      android:hardwareAccelerated="true"
+      android:screenOrientation="behind"
+      android:theme="@android:style/Theme.Holo.NoActionBar.Fullscreen" />
+  </application>
+</manifest>
