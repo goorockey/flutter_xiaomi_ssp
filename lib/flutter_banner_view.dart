@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 class FlutterMimoBannerView extends StatefulWidget {
-  final String appId;
   final String positionId;
   final int width;
   final int height;
@@ -13,7 +12,6 @@ class FlutterMimoBannerView extends StatefulWidget {
   final Function onExposure;
 
   FlutterMimoBannerView(
-    this.appId,
     this.positionId, {
     this.width,
     this.height,
@@ -84,12 +82,11 @@ class _FlutterMimoBannerViewState extends State<FlutterMimoBannerView> {
   _loadView() async {
     if (_channel == null) {
       _channel =
-          MethodChannel("flutter_mimo_banner_ad_view_" + _channelId.toString());
+          MethodChannel("flutter_xiaomi_ssp_banner_ad_view_" + _channelId.toString());
       _channel.setMethodCallHandler(_onMethodCall);
     }
 
     final result = await _channel.invokeMethod("renderBannerAd", {
-      "appId": widget.appId,
       "positionId": widget.positionId,
     });
 
@@ -111,7 +108,7 @@ class _FlutterMimoBannerViewState extends State<FlutterMimoBannerView> {
       height: loaded ? widget.height.toDouble() : 1,
       width: loaded ? widget.width.toDouble() : 1,
       child: AndroidView(
-        viewType: "flutter_mimo_banner_ad_view",
+        viewType: "flutter_xiaomi_ssp_banner_ad_view",
         onPlatformViewCreated: (id) async {
           _channelId = id;
           _loadView();
@@ -125,9 +122,8 @@ class _FlutterMimoBannerViewState extends State<FlutterMimoBannerView> {
       height: loaded ? widget.height.toDouble() : 1,
       width: loaded ? widget.width.toDouble() : 1,
       child: UiKitView(
-        viewType: "flutter_mimo_banner_ad_view",
+        viewType: "flutter_xiaomi_ssp_banner_ad_view",
         creationParams: <String, dynamic>{
-          "appId": widget.appId,
           "positionId": widget.positionId,
         },
         creationParamsCodec: new StandardMessageCodec(),

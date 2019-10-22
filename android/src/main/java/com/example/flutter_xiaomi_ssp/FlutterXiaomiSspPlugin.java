@@ -16,7 +16,10 @@ import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import io.flutter.plugin.common.MethodChannel.Result;
 import io.flutter.plugin.common.PluginRegistry.Registrar;
+import io.flutter.plugin.common.StandardMessageCodec;
 
+
+import com.example.flutter_xiaomi_ssp.views.FlutterBannerAdViewFactory;
 import com.example.flutter_xiaomi_ssp.Consts;
 
 import com.miui.zeus.mimo.sdk.MimoSdk;
@@ -45,6 +48,9 @@ public class FlutterXiaomiSspPlugin implements MethodCallHandler {
   /** Plugin registration. */
   public static void registerWith(Registrar registrar) {
     new FlutterXiaomiSspPlugin(registrar);
+
+    registrar.platformViewRegistry().registerViewFactory("flutter_xiaomi_ssp_banner_ad_view",
+        new FlutterBannerAdViewFactory(new StandardMessageCodec(), registrar.activity(), registrar.messenger()));
   }
 
   @Override
@@ -80,7 +86,8 @@ public class FlutterXiaomiSspPlugin implements MethodCallHandler {
         return;
       }
 
-      mVideoAdWorker = AdWorkerFactory.getRewardVideoAdWorker(mRegistrar.activity().getApplicationContext(), positionId, AdType.AD_REWARDED_VIDEO);
+      mVideoAdWorker = AdWorkerFactory.getRewardVideoAdWorker(mRegistrar.activity().getApplicationContext(), positionId,
+          AdType.AD_REWARDED_VIDEO);
 
       mVideoAdWorker.setListener(new MimoRewardVideoListener() {
         private boolean mVideoComplete = false;
@@ -189,26 +196,27 @@ public class FlutterXiaomiSspPlugin implements MethodCallHandler {
         MimoSdk.setStaging(staging);
       }
 
-      MimoSdk.init(mRegistrar.activity().getApplicationContext(), appId, "fake_app_key", "fake_app_token", new IMimoSdkListener() {
-        @Override
-        public void onSdkInitSuccess() {
-          try {
-            result.success(true);
-          } catch (Exception e) {
-            e.printStackTrace();
-          }
+      MimoSdk.init(mRegistrar.activity().getApplicationContext(), appId, "fake_app_key", "fake_app_token",
+          new IMimoSdkListener() {
+            @Override
+            public void onSdkInitSuccess() {
+              try {
+                result.success(true);
+              } catch (Exception e) {
+                e.printStackTrace();
+              }
 
-        }
+            }
 
-        @Override
-        public void onSdkInitFailed() {
-          try {
-            result.success(false);
-          } catch (Exception e) {
-            e.printStackTrace();
-          }
-        }
-      });
+            @Override
+            public void onSdkInitFailed() {
+              try {
+                result.success(false);
+              } catch (Exception e) {
+                e.printStackTrace();
+              }
+            }
+          });
     } catch (Exception e) {
       e.printStackTrace();
       try {

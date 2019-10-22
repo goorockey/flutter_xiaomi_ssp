@@ -2,6 +2,8 @@ import 'dart:async';
 
 import 'package:flutter/services.dart';
 
+export 'flutter_banner_view.dart';
+
 class FlutterXiaomiSsp {
   static const MethodChannel _channel =
       const MethodChannel('flutter_xiaomi_ssp');
