@@ -20,6 +20,7 @@ import io.flutter.plugin.common.StandardMessageCodec;
 
 
 import com.example.flutter_xiaomi_ssp.views.FlutterBannerAdViewFactory;
+import com.example.flutter_xiaomi_ssp.views.FlutterSplashAdViewFactory;
 import com.example.flutter_xiaomi_ssp.Consts;
 
 import com.miui.zeus.mimo.sdk.MimoSdk;
@@ -51,6 +52,9 @@ public class FlutterXiaomiSspPlugin implements MethodCallHandler {
 
     registrar.platformViewRegistry().registerViewFactory("flutter_xiaomi_ssp_banner_ad_view",
         new FlutterBannerAdViewFactory(new StandardMessageCodec(), registrar.activity(), registrar.messenger()));
+    registrar.platformViewRegistry().registerViewFactory("flutter_xiaomi_ssp_splash_ad_view",
+    new FlutterSplashAdViewFactory(new StandardMessageCodec(), registrar.activity(),
+            registrar.messenger()));
   }
 
   @Override
@@ -86,7 +90,9 @@ public class FlutterXiaomiSspPlugin implements MethodCallHandler {
         return;
       }
 
-      mVideoAdWorker = AdWorkerFactory.getRewardVideoAdWorker(mRegistrar.activity().getApplicationContext(), positionId,
+      Context context = mRegistrar.activity() == null ? mRegistrar.activeContext() : mRegistrar.activity();
+
+      mVideoAdWorker = AdWorkerFactory.getRewardVideoAdWorker(context, positionId,
           AdType.AD_REWARDED_VIDEO);
 
       mVideoAdWorker.setListener(new MimoRewardVideoListener() {
@@ -184,19 +190,27 @@ public class FlutterXiaomiSspPlugin implements MethodCallHandler {
       Boolean enableUpdate = call.argument("enableUpdate");
       if (enableUpdate != null) {
         MimoSdk.setEnableUpdate(enableUpdate);
+      } else {
+        MimoSdk.setEnableUpdate(false);
       }
 
       Boolean debug = call.argument("debug");
       if (debug != null) {
         MimoSdk.setDebug(debug);
+      } else {
+        MimoSdk.setDebug(false);
       }
 
       Boolean staging = call.argument("staging");
       if (staging != null) {
         MimoSdk.setStaging(staging);
+      } else {
+        MimoSdk.setStaging(false);
       }
 
-      MimoSdk.init(mRegistrar.activity().getApplicationContext(), appId, "fake_app_key", "fake_app_token",
+      Context context = mRegistrar.activity() == null ? mRegistrar.activeContext() : mRegistrar.activity();
+
+      MimoSdk.init(context, appId, "fake_app_key", "fake_app_token",
           new IMimoSdkListener() {
             @Override
             public void onSdkInitSuccess() {

@@ -9,10 +9,8 @@ import android.view.View;
 import android.view.ViewParent;
 import android.view.Window;
 import android.view.WindowManager;
-import android.view.Gravity;
 import android.widget.LinearLayout;
 import android.os.Build;
-
 
 import com.example.flutter_xiaomi_ssp.Consts;
 
@@ -33,14 +31,14 @@ import com.miui.zeus.mimo.sdk.ad.AdWorkerFactory;
 import com.miui.zeus.mimo.sdk.ad.IAdWorker;
 import com.miui.zeus.mimo.sdk.listener.MimoAdListener;
 
-public class FlutterBannerAdView implements PlatformView, MethodChannel.MethodCallHandler {
+public class FlutterSplashAdView implements PlatformView, MethodChannel.MethodCallHandler {
     private LinearLayout mLinearLayout;
     private Activity mActivity;
-    private MethodChannel methodChannel;
     private IAdWorker mAdWorker;
+    private MethodChannel methodChannel;
 
-    FlutterBannerAdView(Activity activity, BinaryMessenger messenger, int id) {
-        methodChannel = new MethodChannel(messenger, "flutter_xiaomi_ssp_banner_ad_view_" + id);
+    FlutterSplashAdView(Activity activity, BinaryMessenger messenger, int id) {
+        methodChannel = new MethodChannel(messenger, "flutter_xiaomi_ssp_splash_ad_view_" + id);
         methodChannel.setMethodCallHandler(this);
         this.mActivity = activity;
         if (mLinearLayout == null) {
@@ -102,17 +100,17 @@ public class FlutterBannerAdView implements PlatformView, MethodChannel.MethodCa
 
     @Override
     public void onMethodCall(MethodCall methodCall, MethodChannel.Result result) {
-        if (Consts.FunctionName.RENDER_BANNER_AD.equals(methodCall.method)) {
-            renderBannerAd(methodCall, result);
+        if (Consts.FunctionName.RENDER_SPLASH_AD.equals(methodCall.method)) {
+            renderSplashAd(methodCall, result);
         }
     }
 
-    private void renderBannerAd(MethodCall call, final MethodChannel.Result result) {
+    private void renderSplashAd(MethodCall call, final MethodChannel.Result result) {
         try {
             String positionId = (String) call.argument(Consts.ParamKey.POSITION_ID);
 
             if (TextUtils.isEmpty(positionId)) {
-                Log.i(Consts.TAG, "Xiaomi banner empty positionId");
+                Log.i(Consts.TAG, "Xiaomi splash empty positionId");
                 return;
             }
 
@@ -127,19 +125,18 @@ public class FlutterBannerAdView implements PlatformView, MethodChannel.MethodCa
             mAdWorker = AdWorkerFactory.getAdWorker(mActivity, mLinearLayout, new MimoAdListener() {
                 @Override
                 public void onAdPresent() {
-                    Log.i(Consts.TAG, "Xiaomi banner onAdPresent");
+                    Log.i(Consts.TAG, "Xiaomi splash onAdPresent");
 
-                    mActivity.runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            methodChannel.invokeMethod("adLoaded", null);
-                        }
-                    });
+                    try {
+                        result.success(true);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
                 }
 
                 @Override
                 public void onAdClick() {
-                    Log.i(Consts.TAG, "Xiaomi banner onAdClick");
+                    Log.i(Consts.TAG, "Xiaomi splash onAdClick");
 
                     mActivity.runOnUiThread(new Runnable() {
                         @Override
@@ -151,46 +148,43 @@ public class FlutterBannerAdView implements PlatformView, MethodChannel.MethodCa
 
                 @Override
                 public void onAdDismissed() {
-                    Log.i(Consts.TAG, "Xiaomi banner onAdDismissed");
-                }
-
-                @Override
-                public void onAdFailed(String message) {
-                    Log.i(Consts.TAG, String.format("Xiaomi banner onAdFailed, %s", message));
-
+                    Log.i(Consts.TAG, "Xiaomi splash onAdDismissed");
                     mActivity.runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            methodChannel.invokeMethod("adError", null);
+                            methodChannel.invokeMethod("adDismissed", null);
                         }
                     });
                 }
 
                 @Override
+                public void onAdFailed(String message) {
+                    Log.i(Consts.TAG, String.format("Xiaomi splash onAdFailed, %s", message));
+
+                    try {
+                        result.success(false);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                @Override
                 public void onAdLoaded(int size) {
-                    Log.i(Consts.TAG, "Xiaomi banner onAdLoaded");
+                    Log.i(Consts.TAG, "Xiaomi splash onAdLoaded");
                 }
 
                 @Override
                 public void onStimulateSuccess() {
-                    Log.i(Consts.TAG, "Xiaomi banner onStimulateSuccess");
+                    Log.i(Consts.TAG, "Xiaomi splash onStimulateSuccess");
                 }
-            }, AdType.AD_BANNER);
+            }, AdType.AD_SPLASH);
 
             mAdWorker.loadAndShow(positionId);
-
-            try {
-                result.success(true);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
         } catch (Exception e) {
-            e.printStackTrace();
-
             try {
                 result.success(false);
             } catch (Exception e1) {
-                e1.printStackTrace();
+                e.printStackTrace();
             }
         }
     }
