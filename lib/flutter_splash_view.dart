@@ -5,11 +5,11 @@ import 'package:flutter/services.dart';
 class FlutterMimoSplashView extends StatefulWidget {
   final String positionId;
   final int timeout;
-  final Function onLoaded;
-  final Function onError;
-  final Function onClick;
+  final Function? onLoaded;
+  final Function? onError;
+  final Function? onClick;
   // final Function onTick;
-  final Function onFinish;
+  final Function? onFinish;
 
   FlutterMimoSplashView(
     this.positionId, {
